@@ -1,10 +1,19 @@
-def game_round(player):
+import os
+def clear_screen():
+    os.system('cls' if os.name == 'nt' else 'clear')
+def game_round(n,k,player,player_foul):
     while True:
         try:
-            move = int(input(player))
-            return move
+            a = int(input(f"Player {player} enter between 1 to {min(n,k)}: "))
+            if 1 <= a <= min(n,k):
+                break
+            else:
+                print("Invalid input, please enter again!")
+                player_foul[player - 1] += 1
         except ValueError:
             print("Invalid input, please enter again!")
+            player_foul[player - 1] += 1
+    return n - a
 
 def play():
     rounds = []
@@ -13,20 +22,10 @@ def play():
     while True:
         n = int(input("Enter n: "))
         k = int(input("Enter k (where k < n): "))
-        foul = 0
         for number_round in range(1, 1000):
-            print(f"\nRound {number_round}:")
-
+            print(f"Round {number_round}:")
             for i in range(2):
-                while n > 0:
-                    print(f"\nPlayer {i + 1} turn: ")
-                    select = game_round(f"Enter between 1 to {min(n, k)}: ")
-                    if select < 1 or select > min(n, k):
-                        print("Player breaks the rules!")
-                        foul += 1
-                    else:
-                        n -= select
-
+                n = game_round(n, k, i + 1)
                 if n == 0:
                     print(f"Player {i + 1} win")
                     player_win[i] += 1
@@ -38,8 +37,8 @@ def play():
                 break
 
         print("\nGame over")
-        print(f"Player 1 win: {player_win[0]}")
-        print(f"Player 2 win: {player_win[1]}")
+        print(f"Player 1 win: {player_win[0]} round and make {player_foul[0]} mistake")
+        print(f"Player 2 win: {player_win[1]} round and make {player_foul[1]} mistake")
 
         if player_win[0] > player_win[1]:
             print("Player 1 is winner!")
@@ -53,4 +52,5 @@ def play():
             else:
                 print("Both tied")
         print("Number of rounds of the winner:", rounds)
-play()
+if __name__ == "__main__":
+    play()
